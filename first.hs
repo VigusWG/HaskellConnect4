@@ -20,11 +20,12 @@ Each "place"
 0x1 empty
 0x2 isUs
 (the first idea)
-columns first, then rows
+columns first, then rows ... top to bottom. left to right. 
 -}
 import Data.Bits
 
 emptyBoard =  0
 
-getOptions board = 0110
+getOptions board = board (.&.) 101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010
 
+{-- give up go for a differnt file}
