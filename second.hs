@@ -1,4 +1,3 @@
-{-# LANGUAGE ParallelListComp #-}
 {- 
 A Board is a list (not tuple for comprhension reasons) of Columns from left to right (7 of them)
 A column is a list off booleans representing if its our token. Bottom up. If empty, its empty (max 6)
@@ -22,8 +21,6 @@ evaluationFromList x
 
 evaluateColumns board = sum [ evaluationFromList x | x <- board] -- we should never have two winners at once
 
--- ok im using parallel generators, ik we haven't formally learnt it but idk what else to use
--- i cant use zip because what happens if the first column has no items y'know
 
 --evaluateRows board = [[(col1, col2, col3, col4, col5, col6, col7)] | col1 <- board !! 0 | col2 <- board !! 1 | col3 <- board !! 2 | col4 <- board !! 3 | col5 <- board !! 4 | col6 <- board !! 5 | col7 <- board !! 6 ]
 splitOneRow board row split
@@ -42,8 +39,29 @@ splitOneRow board row split
 splitRowsIntoMiniRows board = concat [splitOneRow board r [] | r <- [1 .. 6]] -- not longestColumn cause error idk how to fix
 evaluateRows board = sum [evaluationFromList x | x <- splitRowsIntoMiniRows board]
 
+
+splitDiagonal board startColumn startRow splits
+    | startRow == 7 = splits
+    | startColumn == 8 = splits
+    | length (board!!(startColumn-1)) < startRow = splitDiagonal board (startColumn+1) (startRow+1) (splits ++ [[]])
+    | splits == [] = splitDiagonal board (startColumn+1) (startRow+1) [[board!!(startColumn-1)!!(startRow-1)]]
+    | otherwise = splitDiagonal board (startColumn+1) (startRow+1) (init splits ++ [last splits ++ [board!!(startColumn-1)!!(startRow-1)]])
+
+splitBottomDiagonals board = concat [splitDiagonal board x 1 [] | x <- [1..7]]
+splitSideDiagonals board = concat [splitDiagonal board 1 x [] | x <- [2 .. 6]]
+
+-- ok btm right to top left in terms off starting point
+splitDiagonalsIntoLists board = let revBoard = reverse board
+                                in splitBottomDiagonals board ++ splitSideDiagonals board ++ splitBottomDiagonals revBoard ++ splitSideDiagonals revBoard
+
+evaluateDiagonals board = sum [evaluationFromList x | x <- splitDiagonalsIntoLists board]
+
+
 possibleMoves x = ()
 
 emptyBoard = [[], [], [], [], [], [], []]
 
+t = True -- peak laziness
+f = False
 testBoard1 = [[True], [False, True], [True, False,False], [True, False, True, False], [False,True,True], [False,True,False,True,False], [True]]
+testBoard2 = [[t,t,f], [t, f], [t,f,t], [t,f,f,t,f], [t,t,f,f], [t,f,f], [f,f]]
