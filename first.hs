@@ -28,4 +28,4 @@ emptyBoard =  0
 
 getOptions board = board (.&.) 101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010
 
-{-- give up go for a differnt file}
+{-- give up go for a differnt file -}
