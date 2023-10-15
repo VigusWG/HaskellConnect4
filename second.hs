@@ -56,9 +56,12 @@ splitDiagonalsIntoLists board = let revBoard = reverse board
 
 evaluateDiagonals board = sum [evaluationFromList x | x <- splitDiagonalsIntoLists board]
 
+evaluateBoard board = evaluateDiagonals + evaluateColumns + evaluateRows
+
 addMove board col = let (x,y:ys) = splitAt col board -- ik im inconsistent with if rows start from 0 or 1 its cause of the possibleNextBoards if statement
-                    in x ++ ([y ++ [True]]) ++ ys
+                    in x ++ [y ++ [True]] ++ ys
 possibleNextBoards board = [addMove board x | x <- [0 .. 6], length (board !! x) < 6]
+
 
 emptyBoard = [[], [], [], [], [], [], []]
 
