@@ -80,12 +80,27 @@ getWorstMoveFromList (x : xs) --aka MIN
 -- The above two functions are dumb and will never be used because MiniMax is depth first not breadth first. I spent time writing them out because im a moron
 -- On second thoughts im about to implement them into the code below. I was stupid for thinking i wouldnt need them. I remain a moron
 
+getWorstMove (move : xs) depth
+    | cost == (-1) = (move, cost)
+    | xs == [] = (move, cost)
+    | otherwise =
+        let (move2, cost2) = getWorstMove xs depth
+        in if min cost cost2 == cost then (move, cost) else (move2, cost2)
+    where cost = snd (searchForMove move True (depth + 1))
+
+getBestMove (move : xs) depth
+    | cost == (1) = (move, cost) -- le alpha pruning (i think)
+    | xs == [] = (move, cost)
+    | otherwise =
+        let (move2, cost2) = getBestMove xs depth
+        in if max cost cost2 == cost then (move, cost) else (move2, cost2)
+    where cost = snd (searchForMove move False (depth+1))
+
+
 searchForMove board isMax depth
-    | possibleNextBoards board isMax == [] || depth >= 6 = (board, evaluateBoard board )
-    | isMax && depth == 0 = getBestMoveFromList [searchForMove x False (depth+1) | x <- possibleNextBoards board True]
-    | isMax == False && depth == 0 = getWorstMoveFromList [searchForMove x True (depth+1) | x <- possibleNextBoards board False] --this disgusting bit of code is so that we get the next move just realised this line never runs
-    | isMax = (board, snd (getBestMoveFromList [searchForMove x False (depth+1) | x <- possibleNextBoards board True]))
-    | otherwise = (board, snd (getWorstMoveFromList [searchForMove x True (depth+1) | x <- possibleNextBoards board False]))
+    | possibleNextBoards board isMax == [] || depth >= 6 = (board, evaluateBoard board)
+    | isMax = getBestMove (possibleNextBoards board True) depth
+    | otherwise = getWorstMove (possibleNextBoards board False) depth
 
 -- realised isMax is useless cause we can do MOD 2
 
@@ -108,4 +123,5 @@ testBoard5 = [[f,t,t], [t,f], [f,t], [t,f], [f,f], [], [t,f,t]] -- in 2
 
 testBoard6 = [[t,t], [f], [t,t,f], [f], [f,t], [f], [t,f,t,f]] -- in 2
 
-
+testBoard7 = [[t], [t], [f], [f, t, f, t], [f], [t], [f,f,t]] -- in 4 https://sites.math.rutgers.edu/~zeilberg/C4/ch3/P7.html
+testBoard8 = [[t,f,t,t], [f],[f,t], [f,f,t], [t], [t,f,f],[]]

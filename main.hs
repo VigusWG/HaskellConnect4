@@ -18,7 +18,7 @@ move board column = do
     putStrLn (Connect4.boardToString newBoard)
     let newnewBoard = fst (Connect4.play newBoard)
     let cost = Connect4.evaluateBoard newnewBoard
-    putStrLn (Connect4.boardToString board)
+    putStrLn (Connect4.boardToString newnewBoard)
     if cost == 1 then lose else (if cost == (-1) then win else gameLoop newnewBoard)
 
 gameLoop board = do
