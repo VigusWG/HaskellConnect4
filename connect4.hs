@@ -2,7 +2,7 @@
 A Board is a list (not tuple for comprhension reasons) of Columns from left to right (7 of them)
 A column is a list off booleans representing if its our token. Bottom up. If empty, its empty (max 6)
 -}
-
+--module Connect4 where
 
 consecutiveBoolsInARow [] _ _ = 0
 
@@ -81,7 +81,7 @@ getWorstMoveFromList (x : xs) --aka MIN
 -- On second thoughts im about to implement them into the code below. I was stupid for thinking i wouldnt need them. I remain a moron
 
 searchForMove board isMax depth
-    | possibleNextBoards board isMax == [] || depth >= 5 = (board, evaluateBoard board )
+    | possibleNextBoards board isMax == [] || depth >= 4 = (board, evaluateBoard board )
     | isMax && depth == 0 = getBestMoveFromList [searchForMove x False (depth+1) | x <- possibleNextBoards board True]
     | isMax == False && depth == 0 = getWorstMoveFromList [searchForMove x True (depth+1) | x <- possibleNextBoards board False] --this disgusting bit of code is so that we get the next move
     | isMax = (board, snd (getBestMoveFromList [searchForMove x False (depth+1) | x <- possibleNextBoards board True]))
@@ -89,6 +89,10 @@ searchForMove board isMax depth
 
 
 play board = searchForMove board True 0
+
+
+boardToString board = [if col == 7 then '\n' else if length (board!!col) <= row then ' ' else if board!!col!!row then 'X' else '0' | row <- [0..5], col <- [0..7]]
+playerMove board column = addMove board (column+1) False
 
 emptyBoard = [[], [], [], [], [], [], []]
 
