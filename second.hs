@@ -84,8 +84,8 @@ searchForMove board isMax depth
     | possibleNextBoards board isMax == [] || depth >= 5 = (board, evaluateBoard board )
     | isMax && depth == 0 = getBestMoveFromList [searchForMove x False (depth+1) | x <- possibleNextBoards board True]
     | isMax == False && depth == 0 = getWorstMoveFromList [searchForMove x True (depth+1) | x <- possibleNextBoards board False] --this disgusting bit of code is so that we get the next move
-    | isMax = (board, snd (getBestMoveFromList [searchForMove x False (depth+1) | x <- possibleNextBoards board True]) * depth**(-1))
-    | otherwise = (board, snd (getWorstMoveFromList [searchForMove x True (depth+1) | x <- possibleNextBoards board False]) * (depth**(-1)))
+    | isMax = (board, snd (getBestMoveFromList [searchForMove x False (depth+1) | x <- possibleNextBoards board True]))
+    | otherwise = (board, snd (getWorstMoveFromList [searchForMove x True (depth+1) | x <- possibleNextBoards board False]))
 
 
 play board = searchForMove board True 0
