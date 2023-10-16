@@ -74,7 +74,7 @@ getWorstMoveFromList (x : xs) --aka MIN
     | xs == [] = x
     | otherwise =
         let (move, cost) = x
-            (move2, cost2) = getBestMoveFromList xs
+            (move2, cost2) = getWorstMoveFromList xs
         in if min cost cost2 == cost then (move, cost) else (move2, cost2)
 
 -- The above two functions are dumb and will never be used because MiniMax is depth first not breadth first. I spent time writing them out because im a moron
@@ -102,4 +102,3 @@ testBoard4 = [[], [f,t,f],[t,t,t], [f,t,f], [f], [t,f,f], [t,t,f]] -- easy win i
 testBoard5 = [[f,t,t], [t,f], [f,t], [t,f], [f,f], [], [t,f,t]] -- in 2
 
 testBoard6 = [[t,t], [f], [t,t,f], [f], [f,t], [f], [t,f,t,f]] -- in 2
--- ok bug found, it finds a victory but doesnt care about how long it takes. A garunteed win is a garunteed win right
