@@ -56,12 +56,39 @@ splitDiagonalsIntoLists board = let revBoard = reverse board
 
 evaluateDiagonals board = sum [evaluationFromList x | x <- splitDiagonalsIntoLists board]
 
-evaluateBoard board = evaluateDiagonals + evaluateColumns + evaluateRows
+evaluateBoard board = evaluateDiagonals board + evaluateColumns board + evaluateRows board
 
-addMove board col = let (x,y:ys) = splitAt col board -- ik im inconsistent with if rows start from 0 or 1 its cause of the possibleNextBoards if statement
-                    in x ++ [y ++ [True]] ++ ys
-possibleNextBoards board = [addMove board x | x <- [0 .. 6], length (board !! x) < 6]
+addMove board col bool = let (x,y:ys) = splitAt col board -- ik im inconsistent with if rows start from 0 or 1 its cause of the possibleNextBoards if statement
+                    in x ++ [y ++ [bool]] ++ ys
+possibleNextBoards board bool = if evaluateBoard board /= 0 then [] else [addMove board x bool | x <- [0 .. 6], length (board !! x) < 6]
 
+
+getBestMoveFromList (x:xs)
+    | xs == [] = x
+    | otherwise =   let
+                        (move, cost) = x
+                        (move2, cost2) = getBestMoveFromList xs
+                    in if max cost cost2 == cost then (move, cost) else (move2, cost2)
+
+getWorstMoveFromList (x : xs) --aka MIN
+    | xs == [] = x
+    | otherwise =
+        let (move, cost) = x
+            (move2, cost2) = getBestMoveFromList xs
+        in if min cost cost2 == cost then (move, cost) else (move2, cost2)
+
+-- The above two functions are dumb and will never be used because MiniMax is depth first not breadth first. I spent time writing them out because im a moron
+-- On second thoughts im about to implement them into the code below. I was stupid for thinking i wouldnt need them. I remain a moron
+
+searchForMove board isMax depth
+    | possibleNextBoards board isMax == [] || depth >= 5 = (board, evaluateBoard board )
+    | isMax && depth == 0 = getBestMoveFromList [searchForMove x False (depth+1) | x <- possibleNextBoards board True]
+    | isMax == False && depth == 0 = getWorstMoveFromList [searchForMove x True (depth+1) | x <- possibleNextBoards board False] --this disgusting bit of code is so that we get the next move
+    | isMax = (board, snd (getBestMoveFromList [searchForMove x False (depth+1) | x <- possibleNextBoards board True]) * depth**(-1))
+    | otherwise = (board, snd (getWorstMoveFromList [searchForMove x True (depth+1) | x <- possibleNextBoards board False]) * (depth**(-1)))
+
+
+play board = searchForMove board True 0
 
 emptyBoard = [[], [], [], [], [], [], []]
 
@@ -69,3 +96,10 @@ t = True -- peak laziness
 f = False
 testBoard1 = [[True], [False, True], [True, False,False], [True, False, True, False], [False,True,True], [False,True,False,True,False], [True]]
 testBoard2 = [[t,t,f], [t, f], [t,f,t], [t,f,f,t,f], [t,t,f,f], [t,f,f], [f,f]]
+
+testBoard3 = [[t], [f, t, f, t], [f], [f], [t], [f, t], [t, f]] -- win in 3 https://sites.math.rutgers.edu/~zeilberg/C4/ch3/Problems.html
+testBoard4 = [[], [f,t,f],[t,t,t], [f,t,f], [f], [t,f,f], [t,t,f]] -- easy win in 1 
+testBoard5 = [[f,t,t], [t,f], [f,t], [t,f], [f,f], [], [t,f,t]] -- in 2
+
+testBoard6 = [[t,t], [f], [t,t,f], [f], [f,t], [f], [t,f,t,f]] -- in 2
+-- ok bug found, it finds a victory but doesnt care about how long it takes. A garunteed win is a garunteed win right
