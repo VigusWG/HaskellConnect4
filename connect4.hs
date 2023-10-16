@@ -2,7 +2,7 @@
 A Board is a list (not tuple for comprhension reasons) of Columns from left to right (7 of them)
 A column is a list off booleans representing if its our token. Bottom up. If empty, its empty (max 6)
 -}
---module Connect4 where
+module Connect4 where
 
 consecutiveBoolsInARow [] _ _ = 0
 
@@ -81,18 +81,19 @@ getWorstMoveFromList (x : xs) --aka MIN
 -- On second thoughts im about to implement them into the code below. I was stupid for thinking i wouldnt need them. I remain a moron
 
 searchForMove board isMax depth
-    | possibleNextBoards board isMax == [] || depth >= 4 = (board, evaluateBoard board )
+    | possibleNextBoards board isMax == [] || depth >= 6 = (board, evaluateBoard board )
     | isMax && depth == 0 = getBestMoveFromList [searchForMove x False (depth+1) | x <- possibleNextBoards board True]
-    | isMax == False && depth == 0 = getWorstMoveFromList [searchForMove x True (depth+1) | x <- possibleNextBoards board False] --this disgusting bit of code is so that we get the next move
+    | isMax == False && depth == 0 = getWorstMoveFromList [searchForMove x True (depth+1) | x <- possibleNextBoards board False] --this disgusting bit of code is so that we get the next move just realised this line never runs
     | isMax = (board, snd (getBestMoveFromList [searchForMove x False (depth+1) | x <- possibleNextBoards board True]))
     | otherwise = (board, snd (getWorstMoveFromList [searchForMove x True (depth+1) | x <- possibleNextBoards board False]))
 
+-- realised isMax is useless cause we can do MOD 2
 
 play board = searchForMove board True 0
 
 
-boardToString board = [if col == 7 then '\n' else if length (board!!col) <= row then ' ' else if board!!col!!row then 'X' else '0' | row <- [0..5], col <- [0..7]]
-playerMove board column = addMove board (column+1) False
+boardToString board = "-------\n" ++ [if col == 7 then '\n' else if length (board!!col) <= row then ' ' else if board!!col!!row then 'X' else '0' | row <- [5,4..0], col <- [0..7]] ++ "-------"
+playerMove board column = addMove board (column-1) False
 
 emptyBoard = [[], [], [], [], [], [], []]
 
@@ -106,3 +107,5 @@ testBoard4 = [[], [f,t,f],[t,t,t], [f,t,f], [f], [t,f,f], [t,t,f]] -- easy win i
 testBoard5 = [[f,t,t], [t,f], [f,t], [t,f], [f,f], [], [t,f,t]] -- in 2
 
 testBoard6 = [[t,t], [f], [t,t,f], [f], [f,t], [f], [t,f,t,f]] -- in 2
+
+
