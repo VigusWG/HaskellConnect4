@@ -124,4 +124,4 @@ testBoard5 = [[f,t,t], [t,f], [f,t], [t,f], [f,f], [], [t,f,t]] -- in 2
 testBoard6 = [[t,t], [f], [t,t,f], [f], [f,t], [f], [t,f,t,f]] -- in 2
 
 testBoard7 = [[t], [t], [f], [f, t, f, t], [f], [t], [f,f,t]] -- in 4 https://sites.math.rutgers.edu/~zeilberg/C4/ch3/P7.html
-testBoard8 = [[t,f,t,t], [f],[f,t], [f,f,t], [t], [t,f,f],[]]
+testBoard8 = [[t, f, t, t], [f], [f, t], [f, f, t], [t], [t, f, f], []] -- in 5 https://sites.math.rutgers.edu/~zeilberg/C4/ch5/P2.html
